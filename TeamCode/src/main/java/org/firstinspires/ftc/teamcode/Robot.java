@@ -28,6 +28,8 @@ public class Robot {
         fr = hwmap.get(DcMotor.class, "frontRight");
         br = hwmap.get(DcMotor.class, "backRight");
 
+        int name = 0;
+
         fl.setDirection(DcMotorSimple.Direction.REVERSE);
         bl.setDirection(DcMotorSimple.Direction.REVERSE);
 
