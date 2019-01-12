@@ -3,6 +3,7 @@ package org.firstinspires.ftc.teamcode;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
+import com.qualcomm.robotcore.hardware.Servo;
 
 import org.firstinspires.ftc.robotcore.external.Telemetry;
 
@@ -10,7 +11,7 @@ public class Robot {
 
     private HardwareMap hwmap = null;
 
-    // MOTORS // Hello Darkness My old friend
+    // MOTORS //
     private DcMotor fl = null, fr = null, bl = null, br = null; //Drive Motors
 
     private DcMotor lift; //Lift motor
@@ -19,12 +20,26 @@ public class Robot {
 
     private DcMotor hangLeft, hangRight; //Latch/Deploy motor
 
+    //   SERVOS   //
+    public Servo leftGate, rightGate; //Gate control servos
+
     //VARIABLES //
     private double drivePower = 0, turnPower = 0;
     private double leftPower = 0, rightPower = 0;
 
     private double leftPos = 0, rightPos = 0;
     private final double tickToInch = 445.625/12, tickToDegree = 507/90;
+
+    public double hangPos = 0;
+
+    private double liftPower = 0;
+    private double hangPower = 0;
+    private double intakePower = 0;
+
+    boolean leftGateOpen = false, rightGateOpen = false;
+
+    public static final double GATE_OPEN = 1.0;
+    public static final double GATE_CLOSED = 0;
 
     public void init(HardwareMap ahwmap) {
         hwmap = ahwmap;
@@ -45,9 +60,14 @@ public class Robot {
 
         hangLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
 
+        resetHang();
+
         intake = hwmap.dcMotor.get("intake");
 
         lift = hwmap.dcMotor.get("lift");
+
+        leftGate = hwmap.servo.get("lGate");
+        rightGate = hwmap.servo.get("rGate");
     } //Initializes All Motors and Servos
 
     public double driveDistance() {
@@ -105,4 +125,68 @@ public class Robot {
         updateDriveTelemetry(t);
         t.addData("Hang Pos", hangLeft.getCurrentPosition());
     }
+
+    public void resetDrive() {
+        fl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        bl.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        fr.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        br.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        fl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        bl.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        fr.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        br.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    } //Resets drive encoders
+
+    public void resetHang() {
+        hangRight.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+        hangLeft.setMode(DcMotor.RunMode.STOP_AND_RESET_ENCODER);
+
+        hangRight.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hangLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+    } //Resets Drive Encoders
+
+    public void updateDrive() {
+        leftPos = (fl.getCurrentPosition() + bl.getCurrentPosition()) / 2;
+        rightPos = (fr.getCurrentPosition() + br.getCurrentPosition()) / 2;
+    } //Update Drive position
+
+    public void updateHang() {
+        hangPos = (hangLeft.getCurrentPosition() + hangRight.getCurrentPosition());
+    } //Update Hang Position
+
+
+    public void gateControl(boolean left, boolean right) {
+        leftGateOpen = left;
+        if(leftGateOpen) {
+            leftGate.setPosition(GATE_CLOSED);
+        } else {
+            leftGate.setPosition(GATE_OPEN);
+        }
+
+        rightGateOpen = right;
+        if(rightGateOpen) {
+            rightGate.setPosition(GATE_OPEN);
+        } else {
+            rightGate.setPosition(GATE_CLOSED);
+        }
+    } //Set Gate Status
+
+    public void hangControl(double power) {
+        hangPower = power;
+
+        hangLeft.setPower(hangPower);
+        hangRight.setPower(hangPower);
+    } //Set Hang Power
+
+    public void intakeControl(double power) {
+        intakePower = power;
+        intake.setPower(intakePower);
+    } //Set Intake Power
+
+    public void liftControl(double power) {
+        liftPower = power;
+
+        lift.setPower(liftPower);
+    } //Set Lift Power
 }
