@@ -84,11 +84,9 @@ public class Teleop extends LinearOpMode {
 
             //HANG CONTROLS
             if(gamepad1.dpad_up) {             //G1 Right Trigger Hang
-                hangPower = 1.0;
+                r.setHangTarget(r.HANG_UP);
             } else if(gamepad1.dpad_down) {       //G1 Left Trigger Drop
-                hangPower = -1.0;
-            } else {
-                hangPower = 0;
+               r.setHangTarget(r.HANG_DOWN);
             }
 
             if(gamepad1.back) {
@@ -98,6 +96,7 @@ public class Teleop extends LinearOpMode {
 
             //CONTROL FUNCTIONS
             r.drive(drivePower, turnPower);
+            r.hangControl(1.0);
             r.liftControl(liftPower);
             r.intakeControl(intakePower);
             r.gateControl(leftGate, rightGate);

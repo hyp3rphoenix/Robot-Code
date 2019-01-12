@@ -41,6 +41,10 @@ public class Robot {
     public static final double GATE_OPEN = 1.0;
     public static final double GATE_CLOSED = 0;
 
+    boolean hangUp = false;
+    static final int HANG_UP = -14575;
+    static final int HANG_DOWN = 0;
+
     public void init(HardwareMap ahwmap) {
         hwmap = ahwmap;
 
@@ -58,7 +62,7 @@ public class Robot {
         hangRight.setDirection(DcMotorSimple.Direction.REVERSE);
         hangLeft = hwmap.dcMotor.get("hang2");
 
-        hangLeft.setMode(DcMotor.RunMode.RUN_USING_ENCODER);
+        hangLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
 
         resetHang();
 
@@ -176,8 +180,12 @@ public class Robot {
         hangPower = power;
 
         hangLeft.setPower(hangPower);
-        hangRight.setPower(hangPower);
+        hangRight.setPower(hangLeft.getPower());
     } //Set Hang Power
+
+    public void setHangTarget(int target) {
+        hangLeft.setTargetPosition(target);
+    }
 
     public void intakeControl(double power) {
         intakePower = power;
