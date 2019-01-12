@@ -10,7 +10,7 @@ public class Robot {
 
     private HardwareMap hwmap = null;
 
-    // MOTORS //
+    // MOTORS // Hello Darkness My old friend
     private DcMotor fl = null, fr = null, bl = null, br = null; //Drive Motors
 
     //VARIABLES //
