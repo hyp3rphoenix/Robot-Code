@@ -1,5 +1,6 @@
 package org.firstinspires.ftc.teamcode;
 
+import com.qualcomm.robotcore.hardware.CRServo;
 import com.qualcomm.robotcore.hardware.DcMotor;
 import com.qualcomm.robotcore.hardware.DcMotorSimple;
 import com.qualcomm.robotcore.hardware.HardwareMap;
@@ -18,10 +19,11 @@ public class Robot {
 
     private DcMotor intake; //Sweeper motor
 
-    private DcMotor hangLeft, hangRight; //Latch/Deploy motor
+    public DcMotor hangLeft, hangRight; //Latch/Deploy motor
 
     //   SERVOS   //
-    public Servo leftGate, rightGate; //Gate control servos
+    public Servo leftGate;
+    public CRServo rightGate; //Gate control servos
 
     //VARIABLES //
     private double drivePower = 0, turnPower = 0;
@@ -62,16 +64,16 @@ public class Robot {
         hangRight.setDirection(DcMotorSimple.Direction.REVERSE);
         hangLeft = hwmap.dcMotor.get("hang2");
 
-        hangLeft.setMode(DcMotor.RunMode.RUN_TO_POSITION);
-
         resetHang();
 
         intake = hwmap.dcMotor.get("intake");
 
         lift = hwmap.dcMotor.get("lift");
 
-        leftGate = hwmap.servo.get("lGate");
-        rightGate = hwmap.servo.get("rGate");
+        leftGate = hwmap.servo.get("rGate");
+        rightGate = hwmap.crservo.get("lGate");
+
+        hangLeft.setTargetPosition(HANG_DOWN);
     } //Initializes All Motors and Servos
 
     public double driveDistance() {
@@ -160,7 +162,7 @@ public class Robot {
     } //Update Hang Position
 
 
-    public void gateControl(boolean left, boolean right) {
+    public void gateControl(boolean left, double rightPower) {
         leftGateOpen = left;
         if(leftGateOpen) {
             leftGate.setPosition(GATE_CLOSED);
@@ -168,24 +170,16 @@ public class Robot {
             leftGate.setPosition(GATE_OPEN);
         }
 
-        rightGateOpen = right;
-        if(rightGateOpen) {
-            rightGate.setPosition(GATE_OPEN);
-        } else {
-            rightGate.setPosition(GATE_CLOSED);
-        }
+        rightGate.setPower(rightPower);
     } //Set Gate Status
 
     public void hangControl(double power) {
         hangPower = power;
 
         hangLeft.setPower(hangPower);
-        hangRight.setPower(hangLeft.getPower());
+        hangRight.setPower(hangPower);
     } //Set Hang Power
 
-    public void setHangTarget(int target) {
-        hangLeft.setTargetPosition(target);
-    }
 
     public void intakeControl(double power) {
         intakePower = power;

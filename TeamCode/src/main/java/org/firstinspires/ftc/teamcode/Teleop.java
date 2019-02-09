@@ -24,6 +24,8 @@ public class Teleop extends LinearOpMode {
         double intakePower = 0;
         double hangPower = 0;
 
+        double rightGatePower = 0;
+
         boolean leftGate = false, rightGate = false;
 
         waitForStart();
@@ -40,10 +42,6 @@ public class Teleop extends LinearOpMode {
 
             if(Math.abs(turnPower) < deadzone) {
                 turnPower = 0;
-            }
-
-            if(Math.abs(turnPower) > 0) {
-                turnPower = turnPower;
             }
 
             if(gamepad1.dpad_up) {
@@ -79,14 +77,26 @@ public class Teleop extends LinearOpMode {
             }
 
             //GATE CONTROLS
-            leftGate = gamepad2.x;                              //G2 X Open Left
-            rightGate = gamepad2.b;                             //G2 B Open Right
+            leftGate = gamepad2.x || gamepad1.left_bumper;                              //G2 X Open Left
+            rightGate = gamepad2.b || gamepad1.right_bumper;                             //G2 B Open Right
+
+            if(gamepad2.b || gamepad1.right_bumper) {
+                rightGatePower = -0.85;
+            } else if(gamepad1.y || gamepad2.y) {
+                rightGatePower = 0.85;
+            } else {
+                rightGatePower = 0;
+            }
+
+
 
             //HANG CONTROLS
             if(gamepad1.dpad_up) {             //G1 Right Trigger Hang
-                r.setHangTarget(r.HANG_UP);
+                hangPower = 1.0;
             } else if(gamepad1.dpad_down) {       //G1 Left Trigger Drop
-               r.setHangTarget(r.HANG_DOWN);
+               hangPower = -1.0;
+            } else {
+                hangPower = 0;
             }
 
             if(gamepad1.back) {
@@ -96,12 +106,10 @@ public class Teleop extends LinearOpMode {
 
             //CONTROL FUNCTIONS
             r.drive(drivePower, turnPower);
-            r.hangControl(1.0);
             r.liftControl(liftPower);
             r.intakeControl(intakePower);
-            r.gateControl(leftGate, rightGate);
+            r.gateControl(leftGate, rightGatePower);
             r.hangControl(hangPower);
-
             r.updateDrive();
 
             telemetry.addData("Status", "Running");
