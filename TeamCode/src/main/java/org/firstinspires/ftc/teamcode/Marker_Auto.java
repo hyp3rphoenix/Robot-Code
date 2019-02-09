@@ -40,6 +40,7 @@ public class Marker_Auto extends LinearOpMode {
     HashMap<String, PIDController> PIDs = new HashMap<String, PIDController>(); // Key = Name, V = Controller
 
     PIDController driveFWD = new PIDController();
+    PIDController turnSample = new PIDController();
     PIDController cratorPID = new PIDController();
 
     StallDetect stallHang = new StallDetect();
@@ -68,8 +69,9 @@ public class Marker_Auto extends LinearOpMode {
         stallHang.init(0);
         stallHang.setTolerance(5.00);
 
-        driveFWD.setSensitivity(50);
-        cratorPID.setSensitivity(50);
+        driveFWD.setSensitivity(25);
+        cratorPID.setSensitivity(25);
+        turnSample.setSensitivity(25);
 
         while (opModeIsActive()) {
             if (tfod != null) {
