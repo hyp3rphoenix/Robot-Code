@@ -103,7 +103,7 @@ public class Marker_Auto extends LinearOpMode {
                     r.hangControl(0);
                 }
             }
-
+//
             if(state.equals(MarkerAuto.SCAN_MID)) {
                 sleep(500);
 
